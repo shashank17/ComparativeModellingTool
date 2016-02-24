@@ -41,16 +41,16 @@ def determineGaps(target, template):
 
 
 def extractCAlphaCoordinates(lines):
-	charged_res_coords = []
-	regex = re.compile(
-	    "^ATOM\s([0-9]{4})\s([A-Z0-9]+)\s([A-Z]{3})\s([A-Z]{1}\s{0,1}[0-9]+)\s([0-9\.-]+)\s([0-9\.-]+)\s([0-9\.-]+)\s([0-9\.-]+)\s([0-9\.-]+)\s([A-Z]{1})$")
-	for line in lines:
-		if line.startswith('ATOM'):
-			if 'CA' in line:
-				match = regex.match(line)
-				third_spatial = match.group(7)
-				print(third_spatial)
-				charged_res_coords.append(match.groups()[0:-3])
+    carbon_alpha_coords = []
+    exp = re.compile(
+        "^ATOM[ ]{1,}([0-9]+)[ ]{1,}([A-Z0-9]+)[ ]{1,}([A-Z]{3})[ ]{1,}([A-Z]{1}[ ]{1,}[0-9]+)[ ]{1,}([0-9\.-]+)[ ]{1,}([0-9\.-]+)[ ]{1,}([0-9\.-]+)[ ]{1,}([0-9\.-]+)[ ]{1,}([0-9\.-]+)[ ]{1,}([A-Z]{1})[ ]{1,}$")
+    for line in lines:
+        if line.startswith('ATOM'):
+            if 'CA' in line:
+                match = exp.match(line)
+                carbon_alpha_coords.append(match.groups()[0:-3])
+    return carbon_alpha_coords
+
 
 def readfile():
     file1 = open('OR414-2ctf.ali', 'r')
@@ -61,12 +61,16 @@ def readfile():
     templateLines = list(template2Pdb)
     template1 = lines1[2]
     target1 = lines1[6]
+    file2.close()
+    file1.close()
+    template2Pdb.close()
     print(target1)
     print(template1)
     gaps = determineGaps(target1, template1)
     for (index, length) in gaps:
         optimize(index, length)
-    extractCAlphaCoordinates(templateLines)
+    carbon_alphas = extractCAlphaCoordinates(templateLines)
+    print(carbon_alphas)
     return
 
 if __name__ == '__main__':
